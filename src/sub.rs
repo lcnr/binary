@@ -1,5 +1,11 @@
 use super::*;
 
+pub trait OverflowingSub<T> {
+    type Result: Integer;
+
+    type Overflow: Boolean;
+}
+
 impl<T: Integer, U: Integer> OverflowingSub<B0<U>> for B0<T>
 where
     T: OverflowingSub<U>,

@@ -149,19 +149,6 @@ pub trait Sub<T> {
     type Result: Integer;
 }
 
-/// Overflowing substraction.
-/// ```rust
-/// use binary::*;
-///
-/// assert_eq!(<<(B1, Z) as If<<int!(1 1) as OverflowingSub<int!(1 0 1)>>::Overflow>>::Result>::VALUE, 1);
-/// assert_eq!(<<(B1, Z) as If<<int!(1 1 1) as OverflowingSub<int!(1 0 1)>>::Overflow>>::Result>::VALUE, 0);
-/// ```
-pub trait OverflowingSub<T> {
-    type Result: Integer;
-
-    type Overflow: Boolean;
-}
-
 /// Any `B0` which do not contain a single `B1` are useless and can be discarded.
 pub trait Normalize: Integer {
     type Normalized: Integer;
