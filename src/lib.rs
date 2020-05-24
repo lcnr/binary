@@ -4,6 +4,7 @@ use std::marker::PhantomData;
 
 mod add;
 mod eq;
+mod mul;
 mod normalize;
 mod sub;
 
@@ -31,6 +32,10 @@ impl<T, U> If<False> for (T, U) {
     type Result = U;
 }
 
+pub trait Eq<T> {
+    type Output: Boolean;
+}
+
 /// The terminator for a binary number.
 pub struct Z;
 /// Binary 0.
@@ -40,8 +45,9 @@ pub struct B1<T: Integer = Z>(PhantomData<T>);
 
 #[macro_export]
 macro_rules! int {
+    () => { Z };
     (0 $($t:tt)*) => {
-        int!(@inner B0, $($t)*)
+        int!($($t)*)
     };
     (1 $($t:tt)*) => {
         int!(@inner B1, $($t)*)
@@ -80,6 +86,13 @@ macro_rules! add {
 macro_rules! sub {
     ($a:ty, $b:ty $(,)?) => {
         <$a as Sub<$b>>::Result
+    };
+}
+
+#[macro_export]
+macro_rules! mul {
+    ($a:ty, $b:ty $(,)?) => {
+        <$a as Mul<$b>>::Result
     };
 }
 
@@ -149,18 +162,25 @@ pub trait Sub<T> {
     type Result: Integer;
 }
 
+/// Multiplication.
+pub trait Mul<T> {
+    type Result: Integer;
+}
+
 /// Any `B0` which do not contain a single `B1` are useless and can be discarded.
 pub trait Normalize: Integer {
     type Normalized: Integer;
 }
 
-pub trait Eq<T> {
-    type Output: Boolean;
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    macro_rules! eq {
+        ($ty:ty, $expected:expr $(,)?) => {
+            assert_eq!(<$ty>::VALUE, $expected);
+        };
+    }
 
     #[test]
     fn nums() {
@@ -205,5 +225,13 @@ mod tests {
         assert_eq!(<<int!(1 1 0 1) as Sub<int!(1 0 1 1)>>::Result>::VALUE, 2);
         assert_eq!(<<int!(1 0 1) as Sub<int!(1 0 1 0)>>::Result>::VALUE, 0);
         assert_eq!(<<int!(1 1) as Sub<Z>>::Result>::VALUE, 3);
+    }
+
+    #[test]
+    fn mul() {
+        eq!(mul!(int!(0), int!(1 0 1 0 0 1)), 0);
+        eq!(mul!(int!(1), int!(1 0 1 0 0 1)), 0b101001);
+        eq!(mul!(int!(1 0 1 0), int!(1 0 0 1)), 90);
+        eq!(mul!(int!(1 0 0 1 0), int!(0)), 0);
     }
 }
