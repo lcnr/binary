@@ -82,7 +82,9 @@ where
     <(Zero, <T as OverflowingSub<U>>::Result) as If<<T as OverflowingSub<U>>::Overflow>>::Result:
         Normalize,
 {
-    type Result = <<(Zero, <T as OverflowingSub<U>>::Result) as If<
+    type Result = <iff!(
         <T as OverflowingSub<U>>::Overflow,
-    >>::Result as Normalize>::Normalized;
+        Zero,
+        <T as OverflowingSub<U>>::Result
+    ) as Normalize>::Normalized;
 }

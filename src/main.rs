@@ -1,5 +1,5 @@
 #![recursion_limit = "513"]
-// We need O(n) levels of recursion, where n is the maximun amount of bits,
+// We need O(n) levels of recursion, where n is the maximum amount of bits,
 // and as we multiply two 256 bit numbers, this is the lowest possible value.
 use binary::*;
 

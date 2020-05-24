@@ -29,15 +29,15 @@ impl<T: Integer> Eq<Zero> for B1<T> {
 }
 
 impl<T: Integer + Eq<Zero>> Eq<B0<T>> for Zero {
-    type Output = <T as Eq<Zero>>::Output;
+    type Output = eq!(T, Zero);
 }
 
 impl<T: Integer + Eq<Zero>> Eq<Zero> for B0<T> {
-    type Output = <T as Eq<Zero>>::Output;
+    type Output = eq!(T, Zero);
 }
 
 impl<T: Integer + Eq<U>, U: Integer> Eq<B0<U>> for B0<T> {
-    type Output = <T as Eq<U>>::Output;
+    type Output = eq!(T, U);
 }
 
 impl<T: Integer, U: Integer> Eq<B1<U>> for B0<T> {
@@ -49,5 +49,5 @@ impl<T: Integer, U: Integer> Eq<B0<U>> for B1<T> {
 }
 
 impl<T: Integer + Eq<U>, U: Integer> Eq<B1<U>> for B1<T> {
-    type Output = <T as Eq<U>>::Output;
+    type Output = eq!(T, U);
 }
