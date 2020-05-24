@@ -16,24 +16,24 @@ impl Eq<False> for False {
     type Output = True;
 }
 
-impl Eq<Z> for Z {
+impl Eq<Zero> for Zero {
     type Output = True;
 }
 
-impl<T: Integer> Eq<B1<T>> for Z {
+impl<T: Integer> Eq<B1<T>> for Zero {
     type Output = False;
 }
 
-impl<T: Integer> Eq<Z> for B1<T> {
+impl<T: Integer> Eq<Zero> for B1<T> {
     type Output = False;
 }
 
-impl<T: Integer + Eq<Z>> Eq<B0<T>> for Z {
-    type Output = <T as Eq<Z>>::Output;
+impl<T: Integer + Eq<Zero>> Eq<B0<T>> for Zero {
+    type Output = <T as Eq<Zero>>::Output;
 }
 
-impl<T: Integer + Eq<Z>> Eq<Z> for B0<T> {
-    type Output = <T as Eq<Z>>::Output;
+impl<T: Integer + Eq<Zero>> Eq<Zero> for B0<T> {
+    type Output = <T as Eq<Zero>>::Output;
 }
 
 impl<T: Integer + Eq<U>, U: Integer> Eq<B0<U>> for B0<T> {

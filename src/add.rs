@@ -28,22 +28,22 @@ where
     type Result = B0<<T as Add<U::Succ>>::Result>;
 }
 
-impl<T: Integer> Add<Z> for B0<T> {
+impl<T: Integer> Add<Zero> for B0<T> {
     type Result = B0<T>;
 }
 
-impl<T: Integer> Add<Z> for B1<T> {
+impl<T: Integer> Add<Zero> for B1<T> {
     type Result = B1<T>;
 }
 
-impl<T: Integer> Add<B0<T>> for Z {
+impl<T: Integer> Add<B0<T>> for Zero {
     type Result = B0<T>;
 }
 
-impl<T: Integer> Add<B1<T>> for Z {
+impl<T: Integer> Add<B1<T>> for Zero {
     type Result = B1<T>;
 }
 
-impl Add<Z> for Z {
-    type Result = Z;
+impl Add<Zero> for Zero {
+    type Result = Zero;
 }

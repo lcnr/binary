@@ -1,7 +1,7 @@
 use super::*;
 
-impl<T> Mul<Z> for T {
-    type Result = Z;
+impl<T> Mul<Zero> for T {
+    type Result = Zero;
 }
 
 impl<T: Integer, U: Integer> Mul<B0<U>> for T

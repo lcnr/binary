@@ -42,35 +42,35 @@ where
     type Overflow = <T as OverflowingSub<U>>::Overflow;
 }
 
-impl<T: Integer> OverflowingSub<Z> for B0<T> {
+impl<T: Integer> OverflowingSub<Zero> for B0<T> {
     type Result = B0<T>;
 
     type Overflow = False;
 }
 
-impl<T: Integer> OverflowingSub<Z> for B1<T> {
+impl<T: Integer> OverflowingSub<Zero> for B1<T> {
     type Result = B1<T>;
 
     type Overflow = False;
 }
 
-impl<T: Integer> OverflowingSub<B0<T>> for Z
+impl<T: Integer> OverflowingSub<B0<T>> for Zero
 where
-    Z: OverflowingSub<T>,
+    Zero: OverflowingSub<T>,
 {
-    type Result = Z;
+    type Result = Zero;
 
-    type Overflow = <Z as OverflowingSub<T>>::Overflow;
+    type Overflow = <Zero as OverflowingSub<T>>::Overflow;
 }
 
-impl<T: Integer> OverflowingSub<B1<T>> for Z {
-    type Result = Z;
+impl<T: Integer> OverflowingSub<B1<T>> for Zero {
+    type Result = Zero;
 
     type Overflow = True;
 }
 
-impl OverflowingSub<Z> for Z {
-    type Result = Z;
+impl OverflowingSub<Zero> for Zero {
+    type Result = Zero;
 
     type Overflow = False;
 }
@@ -78,11 +78,11 @@ impl OverflowingSub<Z> for Z {
 impl<T, U> Sub<U> for T
 where
     T: OverflowingSub<U>,
-    (Z, <T as OverflowingSub<U>>::Result): If<<T as OverflowingSub<U>>::Overflow>,
-    <(Z, <T as OverflowingSub<U>>::Result) as If<<T as OverflowingSub<U>>::Overflow>>::Result:
+    (Zero, <T as OverflowingSub<U>>::Result): If<<T as OverflowingSub<U>>::Overflow>,
+    <(Zero, <T as OverflowingSub<U>>::Result) as If<<T as OverflowingSub<U>>::Overflow>>::Result:
         Normalize,
 {
-    type Result = <<(Z, <T as OverflowingSub<U>>::Result) as If<
+    type Result = <<(Zero, <T as OverflowingSub<U>>::Result) as If<
         <T as OverflowingSub<U>>::Overflow,
     >>::Result as Normalize>::Normalized;
 }

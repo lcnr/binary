@@ -6,6 +6,7 @@ mod add;
 mod eq;
 mod mul;
 mod normalize;
+mod shift;
 mod sub;
 
 /// Type level `true`.
@@ -36,16 +37,30 @@ pub trait Eq<T> {
     type Output: Boolean;
 }
 
+#[macro_export]
+macro_rules! iff {
+    ($cond:ty, $tru:ty, $fal:ty $(,)?) => {
+        <($tru, $fal) as If<$cond>>::Result
+    };
+}
+
+#[macro_export]
+macro_rules! eq {
+    ($a:ty, $b:ty $(,)?) => {
+        <$a as Eq<$b>>::Output
+    };
+}
+
 /// The terminator for a binary number.
-pub struct Z;
+pub struct Zero;
 /// Binary 0.
 pub struct B0<T: Integer>(PhantomData<T>);
 /// Binary 1.
-pub struct B1<T: Integer = Z>(PhantomData<T>);
+pub struct B1<T: Integer = Zero>(PhantomData<T>);
 
 #[macro_export]
 macro_rules! int {
-    () => { Z };
+    () => { Zero };
     (0 $($t:tt)*) => {
         int!($($t)*)
     };
@@ -90,6 +105,20 @@ macro_rules! sub {
 }
 
 #[macro_export]
+macro_rules! shl {
+    ($a:ty, $b:ty $(,)?) => {
+        <$a as Shl<<$b as Normalize>::Normalized>>::Result
+    };
+}
+
+#[macro_export]
+macro_rules! shr {
+    ($a:ty, $b:ty $(,)?) => {
+        <$a as Shr<<$b as Normalize>::Normalized>>::Result
+    };
+}
+
+#[macro_export]
 macro_rules! mul {
     ($a:ty, $b:ty $(,)?) => {
         <$a as Mul<$b>>::Result
@@ -118,12 +147,12 @@ pub trait Integer {
     type Pred: Integer;
 }
 
-impl Integer for Z {
+impl Integer for Zero {
     const VALUE: u128 = 0;
 
     type Succ = B1;
 
-    type Pred = Z;
+    type Pred = Zero;
 }
 
 impl<T: Integer> Integer for B0<T> {
@@ -159,6 +188,19 @@ pub trait Add<T> {
 /// assert_eq!(<<B1<B0<B1<B1>>> as Sub<B0<B1<B0<B1>>>>>::Result>::VALUE, 3);
 /// ```
 pub trait Sub<T> {
+    type Result: Integer;
+}
+
+/// Shift left.
+pub trait Shl<T> {
+    type Result: Integer;
+}
+
+/// Shift right.
+///
+/// Note that `T` must be normalized, as this may otherwise return incorrect results,
+/// consider using the `shr` macro, which normalizes automatically.
+pub trait Shr<T> {
     type Result: Integer;
 }
 
@@ -201,7 +243,7 @@ mod tests {
         assert_eq!(<<B1<B0<B1>> as Integer>::Succ>::VALUE, 6);
         assert_eq!(<<B0<B1<B0<B0<B1>>>> as Integer>::Succ>::VALUE, 19);
         assert_eq!(<<B0<B1> as Integer>::Succ>::VALUE, 3);
-        assert_eq!(<<Z as Integer>::Succ>::VALUE, 1);
+        assert_eq!(<<Zero as Integer>::Succ>::VALUE, 1);
     }
 
     #[test]
@@ -209,7 +251,8 @@ mod tests {
         assert_eq!(<<B1<B0<B1>> as Integer>::Pred>::VALUE, 4);
         assert_eq!(<pred!(int!(1 0 0 1 0))>::VALUE, 17);
         assert_eq!(<<B0<B1> as Integer>::Pred>::VALUE, 1);
-        assert_eq!(<<Z as Integer>::Pred>::VALUE, 0);
+        assert_eq!(<<Zero as Integer>::Pred>::VALUE, 0);
+        eq!(pred!(int!(1 0)), 1);
     }
 
     #[test]
@@ -224,7 +267,21 @@ mod tests {
     fn sub() {
         assert_eq!(<<int!(1 1 0 1) as Sub<int!(1 0 1 1)>>::Result>::VALUE, 2);
         assert_eq!(<<int!(1 0 1) as Sub<int!(1 0 1 0)>>::Result>::VALUE, 0);
-        assert_eq!(<<int!(1 1) as Sub<Z>>::Result>::VALUE, 3);
+        assert_eq!(<<int!(1 1) as Sub<Zero>>::Result>::VALUE, 3);
+    }
+
+    #[test]
+    fn shl() {
+        eq!(shl!(int!(1 0 0), int!(0)), 0b100);
+        eq!(shl!(int!(1 0 0 1), int!(1 0)), 0b100100);
+        eq!(shl!(int!(1 0), int!(1 1)), 0b10000);
+    }
+
+    #[test]
+    fn shr() {
+        eq!(shr!(int!(1 0 0), int!(0)), 0b100);
+        eq!(shr!(int!(1 0 0 1), int!(1 0)), 0b10);
+        eq!(shr!(int!(1 0), int!(1 1)), 0);
     }
 
     #[test]
