@@ -1,13 +1,9 @@
 #![recursion_limit = "260"]
-
+// We need one level of depth per bit, so the default of 256 is sadly not enough
+// for 256 bit integers.
 use binary::*;
 
 fn main() {
-    let _: [(); <sub!(
-        add!(int!(1 0 0), sub!(int!(1 1 0 1), int!(1 0 1 1))),
-        int!(1 0 1)
-    )>::VALUE as usize] = [()];
-
     let _: [(); <sub!(
         int!(
             1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
