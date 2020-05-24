@@ -74,8 +74,9 @@ where
     T: OverflowingSub<U>,
     (Z, <T as OverflowingSub<U>>::Result): If<<T as OverflowingSub<U>>::Overflow>,
     <(Z, <T as OverflowingSub<U>>::Result) as If<<T as OverflowingSub<U>>::Overflow>>::Result:
-        Integer,
+        Normalize,
 {
-    type Result =
-        <(Z, <T as OverflowingSub<U>>::Result) as If<<T as OverflowingSub<U>>::Overflow>>::Result;
+    type Result = <<(Z, <T as OverflowingSub<U>>::Result) as If<
+        <T as OverflowingSub<U>>::Overflow,
+    >>::Result as Normalize>::Normalized;
 }

@@ -3,6 +3,8 @@
 use std::marker::PhantomData;
 
 mod add;
+mod eq;
+mod normalize;
 mod sub;
 
 /// Type level `true`.
@@ -158,6 +160,15 @@ pub trait OverflowingSub<T> {
     type Result: Integer;
 
     type Overflow: Boolean;
+}
+
+/// Any `B0` which do not contain a single `B1` are useless and can be discarded.
+pub trait Normalize: Integer {
+    type Normalized: Integer;
+}
+
+pub trait Eq<T> {
+    type Output: Boolean;
 }
 
 #[cfg(test)]
